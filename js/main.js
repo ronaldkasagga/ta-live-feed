@@ -28,14 +28,24 @@ function refreshData() {
 }
 
 $(document).ready(function() {
-    cpuChart = buildChart('cpu-graph', '% CPU Load', [
-        { name: 'CPU 1', data: [] }, 
-        { name: 'CPU 2', data: [] }, 
-        { name: 'CPU 3', data: [] }, 
-        { name: 'CPU 4', data: [] }
-    ]);
+    switch(window.location.protocol) {
+        case 'http:':
+        case 'https:':
+            cpuChart = buildChart('cpu-graph', '% CPU Load', [
+                { name: 'CPU 1', data: [] }, 
+                { name: 'CPU 2', data: [] }, 
+                { name: 'CPU 3', data: [] }, 
+                { name: 'CPU 4', data: [] }
+            ]);
 
-    memoryChart = buildChart('memory-graph', '% RAM', [
-        { name: 'Used', data: []}
-    ]);
+            memoryChart = buildChart('memory-graph', '% RAM', [
+                { name: 'Used', data: []}
+            ]);
+            break;
+        case 'file:':
+            alert("Please within a web server that can serve PHP. This won't work otherwise :)");
+            break;
+        default: 
+            //some other protocol
+        }    
 });
