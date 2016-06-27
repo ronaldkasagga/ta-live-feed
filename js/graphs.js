@@ -28,7 +28,7 @@ function buildChart(render_element_id, YAxisTitle, initSeries) {
 
 function addGraphPoint(chart, seriesIndex, point) {
     var series = chart.series[seriesIndex];
-    var shift = series.data.length > 21;
+    var shift = series.data.length > 40;
     chart.series[seriesIndex].addPoint(point, true, shift);
 }
 
