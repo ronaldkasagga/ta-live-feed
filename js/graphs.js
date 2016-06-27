@@ -4,7 +4,7 @@ function buildChart(render_element_id, YAxisTitle, initSeries) {
             renderTo: render_element_id,
             defaultSeriesType: 'spline',
             events: {
-                load: requestData
+                load: refreshData
             }
         },
         title: null,
