@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <title>TA Live Data</title>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.1.js"></script>
+    <script type="text/javascript" src="//code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="js/graphs.js"></script>
+    <script type="text/javascript" src="js/math.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <div class="container">
+        <div><h1 class="text-center">Live TA Data</h1></div>
+        <div>
+            <div class="row col-md-offset-4">
+                <div class="panel panel-success col-md-3">
+                    <div class="panel-body">
+                        <h4 class="text-center">Memory</h4>
+                        <h2 id="current-memory" class="text-center"></h2>
+                    </div>
+                </div>
+                <div class="panel panel-success col-md-3">
+                    <div class="panel-body">
+                        <h4 class="text-center">CPU</h4>
+                        <h2 id="current-cpu" class="text-center"></h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class='text-center'>CPU</h3>
+                <div class="col-md-12" id="cpu-graph" style="height: 300px;"></div>
+            </div>
+
+            <div class="row">
+                <h3 class="text-center">Memory ( Total <span id="total-memory"></span>)</h3>
+                <div class="col-md-3">
+                    <div class="panel  panel-warning">
+                        <div class="panel-body">
+                            <h4 class="text-center">Used</h4>
+                            <h2 id="used-memory" class="text-center"></h2>
+                        </div>
+                    </div>
+                    <div class="panel  panel-info">
+                        <div class="panel-body">
+                            <h4 class="text-center">Free</h4>
+                            <h2 id="free-memory" class="text-center"></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9" id="memory-graph" style="height:288px"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var cpuChart;
+        var memoryChart;
+
+        function requestData() {
+            $.ajax({
+                url: 'data.php',
+                success: function(data) {
+                    var time = (new Date()).getTime();
+                    var memory = data.Memory;
+                    var percent_memory = percentage(memory.Used / memory.Total, 2);
+                    var percent_cpu = percentage(average(data.Cpu) / 100, 2).toString() + ' %';
+
+                    for (i in [0, 1, 2, 3]) {
+                        addGraphPoint(cpuChart, i, [time, data.Cpu[i]]);
+                    }
+                    addGraphPoint(memoryChart, 0, [time, percent_memory]);
+
+                    $('#total-memory').html(summarize(memory.Total));
+                    $('#free-memory').html(summarize(memory.Free));
+                    $('#used-memory').html(summarize(memory.Used));
+                    $('#current-memory').html(percent_memory + ' %');
+                    $('#current-cpu').html(percent_cpu);
+
+                    setTimeout(requestData, 1000);
+                },
+                cache: false
+            });
+        }
+
+        $(document).ready(function() {
+            cpuChart = buildChart('cpu-graph', '% CPU Load', [
+                { name: 'CPU 1', data: [] }, 
+                { name: 'CPU 2', data: [] }, 
+                { name: 'CPU 3', data: [] }, 
+                { name: 'CPU 4', data: [] }
+            ]);
+
+            memoryChart = buildChart('memory-graph', '% RAM', [
+                { name: 'Used', data: []}
+            ]);
+        });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</body>
+
+</html>
