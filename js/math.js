@@ -1,19 +1,27 @@
-function summarize(memory) {
-    var KB = 1024;
-    var MB = KB * KB;
-    var GB = MB * MB;
-    var TB = GB * GB;
+var KB = 1024;
+var MB = KB * KB;
+var GB = MB * MB;
+var TB = GB * GB;
 
-    if (memory >= TB)
-        return round(memory / TB, 2).toString() + ' TB';
-    else if (memory >= GB)
-        return round(memory / GB, 2).toString() + ' GB';
-    else if (memory >= MB)
-        return round(memory / MB, 2).toString() + ' MB';
-    else if (memory >= KB)
-        return round(memory / KB, 2).toString() + ' KB';
-    else
-        return round(memory, 2).toString() + ' b';
+var memoryUnits = [];
+memoryUnits[TB] = 'TB';
+memoryUnits[GB] = 'GB';
+memoryUnits[MB] = 'MB';
+memoryUnits[KB] = 'KB';
+
+function summarize(memory) {
+    for (var unit = TB; unit >= KB; unit = Math.sqrt(unit))
+        if (memory >= unit)
+            return minimize(memory, unit);
+
+    return round(memory, 2).toString() + ' b';
+}
+
+function minimize(memory, unit) {
+    var size = memory / unit;
+    if (size / 1024 > 1)
+        return round(size / 1024, 2).toString() + ' ' + memoryUnits[unit * unit];
+    return round(size, 2).toString() + ' ' + memoryUnits[unit];
 }
 
 function round(num, digits) {
